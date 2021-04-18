@@ -65,7 +65,7 @@ if SERVER then
         end
     end
 
-    -- Hook verifiant pour chaque entite qui prend des degats si elle est protegee par les effets du SWEP (a voir s'il y a une meilleure solution reduisant le nombre d'appel au hook)
+    -- Hook verifiant pour chaque entite qui prend des degats si elle est protegee par les effets du SWEP
     hook.Add("PlayerHurt", "SWEP_SCP_053", function(victim, attacker, healthRemaining, damageTaken)
         if not table.HasValue(swep_053_owners, victim) then return end -- Verification que la victime est protegee par le SWEP
         if damageTaken <= 0 then return end
