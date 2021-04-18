@@ -40,17 +40,17 @@ end
 
 if SERVER then
 
-    -- Liste des joueurs proteges par le SWEP
+    -- Liste des joueurs protégés par le SWEP
     swep_053_owners = {}
 
-    -- Permet d'ajouter un joueur a la liste des joueurs proteges par le SWEP
+    -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
     function addOwner(ply)
         if table.HasValue(swep_053_owners, ply) then return end
 
         table.insert(swep_053_owners, ply)
     end
 
-    -- Permet de retirer un joueur de la liste des joueurs proteges par le SWEP
+    -- Permet de retirer un joueur de la liste des joueurs protégés par le SWEP
     function removeOwner(ply)
         table.RemoveByValue(swep_053_owners, ply)
     end
@@ -65,19 +65,19 @@ if SERVER then
         end
     end
 
-    -- Hook verifiant pour chaque entite qui prend des degats si elle est protegee par les effets du SWEP
+    -- Hook vérifiant pour chaque joueur qui prend des dégâts si elle est protégé par les effets du SWEP
     hook.Add("PlayerHurt", "SWEP_SCP_053", function(victim, attacker, healthRemaining, damageTaken)
-        if not table.HasValue(swep_053_owners, victim) then return end -- Verification que la victime est protegee par le SWEP
+        if not table.HasValue(swep_053_owners, victim) then return end -- Vérification que la victime est protégée par le SWEP
         if damageTaken <= 0 then return end
 
-        ---[[ Gestion des degats pris
-            if (healthRemaining < 1) then victim:SetHealth(1) end-- Immunite a la mort en cas de degats mortels
+        ---[[ Gestion des dégâts pris
+            if (healthRemaining < 1) then victim:SetHealth(1) end-- Immunise à la mort en cas de dégâts mortels
 
-            local nbrDamage = math.ceil(damageTaken) -- Arrondi au superieur des degats recus afin d'eviter de mourrir des degats decimaux comme le feu
+            local nbrDamage = math.ceil(damageTaken) -- Arrondi au supérieur des dégâts reçus afin d'éviter de mourrir des dégâts decimaux comme le feu
 
-            timer.Simple(0.5, function() -- Decalage de la regeneration de la vie de 0,5s afin de correspondre au "presque instantannement" de la fiche du SCP
+            timer.Simple(0.5, function() -- Décalage de la régénération de la vie de 0,5s afin de correspondre au "presque instantannement" de la fiche du SCP
 
-                if (victim:Health() + nbrDamage <= victim:GetMaxHealth()) then -- Ajustement du soin fournis pour ne pas depasser la valeur de vie maximum
+                if (victim:Health() + nbrDamage <= victim:GetMaxHealth()) then -- Ajustement du soin fourni pour ne pas dépasser la valeur de vie maximum
 
                     victim:SetHealth(victim:Health() + nbrDamage)
 
@@ -100,14 +100,14 @@ if SERVER then
         --]]
     end)
 
-    -- Retrait des joueurs deconnectes afin d'empecher des valeurs nulles dans la liste
+    -- Retrait des joueurs déconnectés afin d'empêcher des valeurs nulles dans la liste
     hook.Add('PlayerDisconnected', "SWEP_SCP_053", function(ply)
         if not table.HasValue(swep_053_owners, ply) then return end
            
         removeOwner(ply)
     end)
 
-    function SWEP:SecondaryAttack() -- Permet d'activer ou desactiver l'effet du SWEP
+    function SWEP:SecondaryAttack() -- Permet d'activer ou désactiver l'effet du SWEP
         
         local ply = self:GetOwner()
         switchOwner(ply)
@@ -126,7 +126,7 @@ if SERVER then
 
     end
 
-    ---[[ Commande console pour verifier la liste des joueurs proteges (Server-side)
+    ---[[ Commande console pour vérifier la liste des joueurs protégés (Server-side)
         concommand.Add("scp_053_list",
             
         function()
@@ -163,7 +163,7 @@ if CLIENT then
 
     function SWEP:SecondaryAttack() end
 
-    ---[[ Commande console pour verifier la liste des joueurs proteges (Client-side)
+    ---[[ Commande console pour verifier la liste des joueurs protégés (Client-side)
         concommand.Add("scp_053_list",
             
         function()
@@ -178,7 +178,7 @@ if CLIENT then
         nil, 0)
     --]]
 
-    -- Gestion de la reponse du serveur concernant la commande console scp_053_list
+    -- Gestion de la réponse du serveur concernant la commande console scp_053_list
     net.Receive("Answer_SCP-053_SWEP_Owners", function()
         
         local nbrOwners = net.ReadUInt(7)
