@@ -109,8 +109,7 @@ if SERVER then
 
     function SWEP:SecondaryAttack() -- Permet d'activer ou désactiver l'effet du SWEP
         
-        local ply = self:GetOwner()
-        switchOwner(ply)
+        switchOwner(self:GetOwner())
 
     end
 
