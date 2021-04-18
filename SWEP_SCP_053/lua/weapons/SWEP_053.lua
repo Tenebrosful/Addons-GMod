@@ -45,9 +45,9 @@ if SERVER then
 
     -- Permet d'ajouter un joueur a la liste des joueurs proteges par le SWEP
     function addOwner(ply)
-        if not table.HasValue(swep_053_owners, ply) then
-            table.insert(swep_053_owners, ply)
-        end
+        if table.HasValue(swep_053_owners, ply) then return end
+
+        table.insert(swep_053_owners, ply)
     end
 
     -- Permet de retirer un joueur de la liste des joueurs proteges par le SWEP
@@ -67,8 +67,11 @@ if SERVER then
 
     -- Hook verifiant pour chaque entite qui prend des degats si elle est protegee par les effets du SWEP (a voir s'il y a une meilleure solution reduisant le nombre d'appel au hook)
     hook.Add("PlayerHurt", "SWEP_SCP_053", function(victim, attacker, healthRemaining, damageTaken)
+        if not table.HasValue(swep_053_owners, victim) then return end -- Verification que la victime est protegee par le SWEP
+        if damageTaken <= 0 then return end
 
-        if (table.HasValue(swep_053_owners, victim)) then -- Verification que la victime est protegee par le SWEP
+        ---[[ Gestion des degats pris
+            if (healthRemaining < 1) then victim:SetHealth(1) end-- Immunite a la mort en cas de degats mortels
 
             local nbrDamage = math.ceil(damageTaken) -- Arrondi au superieur des degats recus afin d'eviter de mourrir des degats decimaux comme le feu
 
@@ -85,33 +88,23 @@ if SERVER then
                 end
 
             end)
+        --]]
 
-            if (healthRemaining < 1) then -- Immunite a la mort en cas de degats mortels
-
-                victim:SetHealth(1)
-                --dmginfo:SetDamage(0)
-
-            end
-
+        ---[[ Gestion du slay potentiel de l'attaquant
             if (attacker:IsPlayer() and attacker:Alive() and attacker ~= victim and not attacker:HasGodMode()) then -- Ne tue pas l'attaquant s'il est la victime ou s'il est en God
 
                 attacker:Kill()
                 attacker:PrintMessage(3, "Vous êtes mort d'une crise cardique.")
 
             end
-
-        end
+        --]]
     end)
 
     -- Retrait des joueurs deconnectes afin d'empecher des valeurs nulles dans la liste
     hook.Add('PlayerDisconnected', "SWEP_SCP_053", function(ply)
-        
-        if (table.HasValue(swep_053_owners, ply)) then
-
-            removeOwner(ply)
-
-        end
-
+        if not table.HasValue(swep_053_owners, ply) then return end
+           
+        removeOwner(ply)
     end)
 
     function SWEP:SecondaryAttack() -- Permet d'activer ou desactiver l'effet du SWEP
@@ -133,42 +126,59 @@ if SERVER then
 
     end
 
-    -- Commande console pour verifier la liste des joueurs proteges (Server-side)
-    concommand.Add("scp_053_list",
-        
-    function()
-        print(table.ToString(swep_053_owners, "Joueurs affectés par le SWEP de SCP-053", true))
-    end,
+    ---[[ Commande console pour verifier la liste des joueurs proteges (Server-side)
+        concommand.Add("scp_053_list",
+            
+        function()
+            print(table.ToString(swep_053_owners, "Joueurs affectés par le SWEP de SCP-053", true))
+        end,
 
-    function(cmd, stringargs)
-        print(cmd, stringargs)
-    end,
+        function(cmd, stringargs)
+            print(cmd, stringargs)
+        end,
 
-    nil, 0)
+        nil, 0)
+    --]]
 
-    -- Gestion de la commande console scp_053_list demandée côté client
-    util.AddNetworkString("Ask_SCP-053_SWEP_Owners")
-    util.AddNetworkString("Answer_SCP-053_SWEP_Owners")
-    net.Receive("Ask_SCP-053_SWEP_Owners", function(len, ply)
-        
-        if not ply:IsAdmin() then return end
-        net.Start("Answer_SCP-053_SWEP_Owners")
-            net.WriteUInt(table.Count(swep_053_owners), 7)
+    ---[[ Gestion de la commande console scp_053_list demandée côté client
+        util.AddNetworkString("Ask_SCP-053_SWEP_Owners")
+        util.AddNetworkString("Answer_SCP-053_SWEP_Owners")
+        net.Receive("Ask_SCP-053_SWEP_Owners", function(len, ply)
+            if not ply:IsAdmin() then return end
+            
+            net.Start("Answer_SCP-053_SWEP_Owners")
+                net.WriteUInt(table.Count(swep_053_owners), 7)
 
-            for i, owner in ipairs(swep_053_owners) do
-                net.WriteEntity(owner) 
-            end
+                for i, owner in ipairs(swep_053_owners) do
+                    net.WriteEntity(owner) 
+                end
 
-        net.Broadcast()
-        
-    end)
-
+            net.Broadcast()
+            
+        end)
+    --]]
 end
 
 if CLIENT then
 
     function SWEP:SecondaryAttack() end
 
+    ---[[ Commande console pour verifier la liste des joueurs proteges (Client-side)
+        concommand.Add("scp_053_list",
+            
+        function()
+            net.Start("Ask_SCP-053_SWEP_Owners")
+            net.SendToServer()
+        end,
+
+        function(cmd, stringargs)
+            print(cmd, stringargs)
+        end,
+
+        nil, 0)
+    --]]
+
+    -- Gestion de la reponse du serveur concernant la commande console scp_053_list
     net.Receive("Answer_SCP-053_SWEP_Owners", function()
         
         local nbrOwners = net.ReadUInt(7)
@@ -179,20 +189,6 @@ if CLIENT then
         print(table.ToString(owners, "Joueurs affectés par le SWEP de SCP-053", true))
 
     end)
-
-    -- Commande console pour verifier la liste des joueurs proteges (Client-side)
-    concommand.Add("scp_053_list",
-        
-    function()
-        net.Start("Ask_SCP-053_SWEP_Owners")
-        net.SendToServer()
-    end,
-
-    function(cmd, stringargs)
-        print(cmd, stringargs)
-    end,
-
-    nil, 0)
 
 end
 
