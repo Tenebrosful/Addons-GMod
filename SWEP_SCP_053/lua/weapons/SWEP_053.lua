@@ -60,7 +60,7 @@ if SERVER then
     local function switchOwner(ply)
         if not isEffectEnabled(ply)
             then addOwner(ply)
-            else revomeOwner(ply)
+            else removeOwner(ply)
         end
 
         return isEffectEnabled(ply)
