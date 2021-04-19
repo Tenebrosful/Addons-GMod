@@ -61,10 +61,10 @@ if SERVER then
 
     function switchOwner(ply)
         if not isEffectEnabled(ply) then
-            table.insert(swep_053_owners, ply)
+            addOwner(ply)
             ply:PrintMessage(3, "Effets de SCP-053 actifs")
         else
-            table.RemoveByValue(swep_053_owners, ply)
+            revomeOwner(ply)
             ply:PrintMessage(3, "Effets de SCP-053 inactifs")
         end
     end
