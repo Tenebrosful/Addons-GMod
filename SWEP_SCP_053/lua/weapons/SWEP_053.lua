@@ -43,21 +43,21 @@ if SERVER then
     -- Liste des joueurs protégés par le SWEP
     local swep_053_owners = {}
 
-    function isEffectEnabled(ply)
+    local function isEffectEnabled(ply)
         return table.HasValue(swep_053_owners, ply)
     end
 
     -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
-    function addOwner(ply)
+    local function addOwner(ply)
         table.insert(swep_053_owners, ply)
     end
 
     -- Permet de retirer un joueur de la liste des joueurs protégés par le SWEP
-    function removeOwner(ply)
+    local function removeOwner(ply)
         table.RemoveByValue(swep_053_owners, ply)
     end
 
-    function switchOwner(ply)
+    local function switchOwner(ply)
         if not isEffectEnabled(ply)
             then addOwner(ply)
             else revomeOwner(ply)
