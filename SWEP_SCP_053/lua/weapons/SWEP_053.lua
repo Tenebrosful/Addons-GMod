@@ -1,8 +1,10 @@
 SWEP.PrintName = "SWEP SCP-053"
 
-SWEP.Author = "Tenebrosful"
-SWEP.Instructions =
-    "Posséder ce SWEP tuera tout joueur vous infligeant des dégâts tout en vous soignant 0,5s après. Immunise à la mort. Clique Droit permet d'activer / désactiver son effet."
+if CLIENT then
+    SWEP.Author = "Tenebrosful"
+    SWEP.Instructions = language.GetPhrase("swep_SCP-053.description")
+end
+
 SWEP.Category = "SCP"
 
 SWEP.Spawnable = true
@@ -41,7 +43,7 @@ end
 if SERVER then
 
     -- Liste des joueurs protégés par le SWEP
-    swep_053_owners = {}
+    local swep_053_owners = {}
 
     -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
     function addOwner(ply)
@@ -55,14 +57,21 @@ if SERVER then
         table.RemoveByValue(swep_053_owners, ply)
     end
 
+    util.AddNetworkString("SCP-053_SWEP_ChangedState")
     function switchOwner(ply)
-        if not table.HasValue(swep_053_owners, ply) then
+
+        local isEffectEnabled = table.HasValue(swep_053_owners, ply)
+
+        if not isEffectEnabled then
             table.insert(swep_053_owners, ply)
-            ply:PrintMessage(3, "Effets de SCP-053 actifs")
         else
             table.RemoveByValue(swep_053_owners, ply)
-            ply:PrintMessage(3, "Effets de SCP-053 inactifs")
         end
+
+        net.Start("SCP-053_SWEP_ChangedState")
+            net.WriteBool(isEffectEnabled)
+        net.Broadcast()
+
     end
 
     -- Hook vérifiant pour chaque joueur qui prend des dégâts si elle est protégé par les effets du SWEP
@@ -185,8 +194,18 @@ if CLIENT then
 
         for i=0, nbrOwners - 1 do table.insert(owners, net.ReadEntity()) end
 
-        print(table.ToString(owners, "Joueurs affectés par le SWEP de SCP-053", true))
+        print(table.ToString(owners, language.GetPhrase("swep_SCP-053.cmdListPlayers"), true))
 
+    end)
+
+    net.Receive("SCP-053_SWEP_ChangedState", function()
+
+        local effectState = net.ReadBool()
+
+        if(effectState)
+            then LocalPlayer():PrintMessage(3, language.GetPhrase("swep_SCP-053.effectEnabled"))
+            else LocalPlayer():PrintMessage(3, language.GetPhrase("swep_SCP-053.effectDisabled"))
+        end
     end)
 
 end
