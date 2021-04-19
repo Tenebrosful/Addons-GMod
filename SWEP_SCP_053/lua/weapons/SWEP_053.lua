@@ -113,8 +113,8 @@ if SERVER then
         local newState = switchOwner(self:GetOwner())
 
         if(newState)
-            then ply:PrintMessage(3, "Effets de SCP-053 actifs")
-            else ply:PrintMessage(3, "Effets de SCP-053 inactifs")
+            then self:GetOwner():PrintMessage(3, "Effets de SCP-053 actifs")
+            else self:GetOwner():PrintMessage(3, "Effets de SCP-053 inactifs")
         end
     end
 
