@@ -43,9 +43,13 @@ if SERVER then
     -- Liste des joueurs protégés par le SWEP
     local swep_053_owners = {}
 
+    function isEffectEnabled(ply)
+        return table.HasValue(swep_053_owners, ply)
+    end
+
     -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
     function addOwner(ply)
-        if table.HasValue(swep_053_owners, ply) then return end
+        if isEffectEnabled(ply) then return end
 
         table.insert(swep_053_owners, ply)
     end
@@ -56,7 +60,7 @@ if SERVER then
     end
 
     function switchOwner(ply)
-        if not table.HasValue(swep_053_owners, ply) then
+        if not isEffectEnabled(ply) then
             table.insert(swep_053_owners, ply)
             ply:PrintMessage(3, "Effets de SCP-053 actifs")
         else
@@ -67,7 +71,7 @@ if SERVER then
 
     -- Hook vérifiant pour chaque joueur qui prend des dégâts si elle est protégé par les effets du SWEP
     hook.Add("PlayerHurt", "SWEP_SCP_053", function(victim, attacker, healthRemaining, damageTaken)
-        if not table.HasValue(swep_053_owners, victim) then return end -- Vérification que la victime est protégée par le SWEP
+        if not isEffectEnabled(victim) then return end -- Vérification que la victime est protégée par le SWEP
         if damageTaken <= 0 then return end
 
         ---[[ Gestion des dégâts pris
@@ -102,7 +106,7 @@ if SERVER then
 
     -- Retrait des joueurs déconnectés afin d'empêcher des valeurs nulles dans la liste
     hook.Add('PlayerDisconnected', "SWEP_SCP_053", function(ply)
-        if not table.HasValue(swep_053_owners, ply) then return end
+        if not isEffectEnabled(ply) then return end
            
         removeOwner(ply)
     end)
