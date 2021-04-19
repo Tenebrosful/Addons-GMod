@@ -58,12 +58,9 @@ if SERVER then
     end
 
     function switchOwner(ply)
-        if not isEffectEnabled(ply) then
-            addOwner(ply)
-            ply:PrintMessage(3, "Effets de SCP-053 actifs")
-        else
-            revomeOwner(ply)
-            ply:PrintMessage(3, "Effets de SCP-053 inactifs")
+        if not isEffectEnabled(ply)
+            then addOwner(ply)
+            else revomeOwner(ply)
         end
 
         return isEffectEnabled(ply)
@@ -113,8 +110,12 @@ if SERVER then
 
     function SWEP:SecondaryAttack() -- Permet d'activer ou désactiver l'effet du SWEP
         
-        switchOwner(self:GetOwner())
+        local newState = switchOwner(self:GetOwner())
 
+        if(newState)
+            then ply:PrintMessage(3, "Effets de SCP-053 actifs")
+            else ply:PrintMessage(3, "Effets de SCP-053 inactifs")
+        end
     end
 
     function SWEP:Equip() -- Active le SWEP au ramassage
