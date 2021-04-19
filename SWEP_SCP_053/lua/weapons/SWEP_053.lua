@@ -65,6 +65,8 @@ if SERVER then
             revomeOwner(ply)
             ply:PrintMessage(3, "Effets de SCP-053 inactifs")
         end
+
+        return isEffectEnabled(ply)
     end
 
     -- Hook vérifiant pour chaque joueur qui prend des dégâts si elle est protégé par les effets du SWEP
