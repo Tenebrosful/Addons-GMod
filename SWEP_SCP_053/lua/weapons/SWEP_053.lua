@@ -41,7 +41,7 @@ end
 if SERVER then
 
     -- Liste des joueurs protégés par le SWEP
-    swep_053_owners = {}
+    local swep_053_owners = {}
 
     -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
     function addOwner(ply)
