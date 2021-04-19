@@ -49,8 +49,6 @@ if SERVER then
 
     -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
     function addOwner(ply)
-        if isEffectEnabled(ply) then return end
-
         table.insert(swep_053_owners, ply)
     end
 
