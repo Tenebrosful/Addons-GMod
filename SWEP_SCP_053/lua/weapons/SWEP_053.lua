@@ -30,7 +30,7 @@ SWEP.ViewModelFlip = false
 SWEP.ViewModelFOV = 60
 SWEP.ViewModel = ""
 SWEP.WorldModel = ""
-SWEP.UseHands = false
+SWEP.UseHands = true
 
 SWEP.HoldType = "normal"
 
@@ -78,15 +78,7 @@ if SERVER then
 
             timer.Simple(0.5, function() -- Décalage de la régénération de la vie de 0,5s afin de correspondre au "presque instantannement" de la fiche du SCP
 
-                if (victim:Health() + nbrDamage <= victim:GetMaxHealth()) then -- Ajustement du soin fourni pour ne pas dépasser la valeur de vie maximum
-
-                    victim:SetHealth(victim:Health() + nbrDamage)
-
-                else
-
-                    victim:SetHealth(victim:GetMaxHealth())
-
-                end
+                victim:SetHealth(math.Clamp(victim:Health() + nbrDamage, victim:Health(), victim:GetMaxHealth()))
 
             end)
         --]]
