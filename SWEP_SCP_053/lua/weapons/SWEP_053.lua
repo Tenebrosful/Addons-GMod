@@ -17,6 +17,7 @@ SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
+SWEP.Secondary.Cooldown = 2
 
 SWEP.Slot = 1
 SWEP.SlotPos = 1
@@ -108,6 +109,9 @@ if SERVER then
             then self:GetOwner():PrintMessage(3, "Effets de SCP-053 actifs")
             else self:GetOwner():PrintMessage(3, "Effets de SCP-053 inactifs")
         end
+
+        self:SetNextSecondaryFire(CurTime() + self.Secondary.Cooldown)
+
     end
 
     function SWEP:Equip() -- Active le SWEP au ramassage
