@@ -2,7 +2,7 @@ SWEP.PrintName = "SWEP SCP-053"
 
 SWEP.Author = "Tenebrosful"
 SWEP.Instructions =
-    "Posséder ce SWEP tuera tout joueur vous infligeant des dégâts tout en vous soignant 0,5s après. Immunise à la mort. Clique Droit permet d'activer / désactiver son effet."
+    "Posséder ce SWEP tuera tout joueur vous infligeant des dégâts tout en vous soignant 0,5s après.\nImmunise à la mort.\nClique Droit permet d'activer / désactiver son effet."
 SWEP.Category = "SCP"
 
 SWEP.Spawnable = true
