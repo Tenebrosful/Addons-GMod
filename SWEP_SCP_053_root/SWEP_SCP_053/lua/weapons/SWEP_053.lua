@@ -141,11 +141,20 @@ if SERVER then
     ---[[ Commande console pour vérifier la liste des joueurs protégés (Server-side)
         concommand.Add("scp_053_list",
             
-        function()
-            for steamID64 in pairs(swep_053_owners) do
-                local ply = player.GetBySteamID64(steamID64)
-                print(steamID64, ply:Nick(), ply:GetName())
+        function(ply)
+            if ply:IsValid() and ply:IsAdmin()
+                then
+                    for steamID64, state in pairs(swep_053_owners) do
+                        local ply = player.GetBySteamID64(steamID64)
+                        ply:PrintMessage(1, steamID64 .. " " .. ply:Nick() .. " " .. ply:GetName() .. " " .. tostring(state))
+                    end
+                else
+                    for steamID64, state in pairs(swep_053_owners) do
+                        local ply = player.GetBySteamID64(steamID64)
+                        print(steamID64, ply:Nick(), ply:GetName(), state)
+                    end
             end
+            
         end,
 
         function(cmd, stringargs)
@@ -153,57 +162,12 @@ if SERVER then
         end,
 
         nil, 0)
-    --]]
-
-    ---[[ Gestion de la commande console scp_053_list demandée côté client
-        util.AddNetworkString("Ask_SCP-053_SWEP_Owners")
-        util.AddNetworkString("Answer_SCP-053_SWEP_Owners")
-        net.Receive("Ask_SCP-053_SWEP_Owners", function(len, ply)
-            if not ply:IsAdmin() then return end
-            
-            net.Start("Answer_SCP-053_SWEP_Owners")
-                net.WriteUInt(table.Count(swep_053_owners), 7)
-
-                for i, owner in ipairs(swep_053_owners) do
-                    net.WriteEntity(owner) 
-                end
-
-            net.Broadcast()
-            
-        end)
     --]]
 end
 
 if CLIENT then
 
     function SWEP:SecondaryAttack() end
-
-    ---[[ Commande console pour verifier la liste des joueurs protégés (Client-side)
-        concommand.Add("scp_053_list",
-            
-        function()
-            net.Start("Ask_SCP-053_SWEP_Owners")
-            net.SendToServer()
-        end,
-
-        function(cmd, stringargs)
-            print(cmd, stringargs)
-        end,
-
-        nil, 0)
-    --]]
-
-    -- Gestion de la réponse du serveur concernant la commande console scp_053_list
-    net.Receive("Answer_SCP-053_SWEP_Owners", function()
-        
-        local nbrOwners = net.ReadUInt(7)
-        local owners = {}
-
-        for i=0, nbrOwners - 1 do table.insert(owners, net.ReadEntity()) end
-
-        print(table.ToString(owners, "Joueurs affectés par le SWEP de SCP-053", true))
-
-    end)
 
 end
 
