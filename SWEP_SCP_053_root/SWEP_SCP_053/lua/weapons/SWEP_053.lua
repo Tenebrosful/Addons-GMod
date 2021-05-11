@@ -41,21 +41,30 @@ end
 
 if SERVER then
 
-    -- Liste des joueurs protégés par le SWEP
+    -- Liste des états des joueurs possédant le SWEP (Effet activé ou non)
     local swep_053_owners = {}
 
     local function isEffectEnabled(ply)
-        return table.HasValue(swep_053_owners, ply)
+        local res = swep_053_owners[ply:SteamID64()];
+
+        if res == nil then return false end
+
+        return res
     end
 
-    -- Permet d'ajouter un joueur à la liste des joueurs protégés par le SWEP
+    -- Permet d'ajouter et/ou activer l'effet du SWEP sur un joueur
     local function addOwner(ply)
-        table.insert(swep_053_owners, ply)
+        swep_053_owners[ply:SteamID64()] = true
     end
 
-    -- Permet de retirer un joueur de la liste des joueurs protégés par le SWEP
+    -- Permet de désactiver l'effet du SWEP sur un joueur
     local function removeOwner(ply)
-        table.RemoveByValue(swep_053_owners, ply)
+        swep_053_owners[ply:SteamID64()] = false
+    end
+
+    -- Permet de retirer un joueur de la liste (En cas de perte du SWEP)
+    local function removeKeyOwner(ply)
+        swep_053_owners[ply:SteamID64()] = nil
     end
 
     local function switchOwner(ply)
@@ -97,8 +106,8 @@ if SERVER then
     -- Retrait des joueurs déconnectés afin d'empêcher des valeurs nulles dans la liste
     hook.Add('PlayerDisconnected', "SWEP_SCP_053", function(ply)
         if not isEffectEnabled(ply) then return end
-           
-        removeOwner(ply)
+
+        removeKeyOwner(ply)
     end)
 
     function SWEP:SecondaryAttack() -- Permet d'activer ou désactiver l'effet du SWEP
@@ -121,8 +130,9 @@ if SERVER then
     end
 
     function SWEP:OnRemove() -- Desactive le SWEP une fois supprime (Lacher l'arme au sol ne retire pas l'effet)
-        
-        removeOwner(self:GetOwner())
+        if not self:GetOwner():IsValid() then return end
+
+        removeKeyOwner(self:GetOwner())
 
     end
 
