@@ -88,7 +88,9 @@ if SERVER then
 
             timer.Simple(0.5, function() -- Décalage de la régénération de la vie de 0,5s afin de correspondre au "presque instantannement" de la fiche du SCP
 
-                victim:SetHealth(math.min(victim:Health() + nbrDamage, victim:GetMaxHealth()))
+                if IsValid(victim) then
+                    victim:SetHealth(math.min(victim:Health() + nbrDamage, victim:GetMaxHealth()))
+                end
 
             end)
         --]]
