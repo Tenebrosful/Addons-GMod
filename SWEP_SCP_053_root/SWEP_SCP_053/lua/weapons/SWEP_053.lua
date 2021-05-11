@@ -142,7 +142,10 @@ if SERVER then
         concommand.Add("scp_053_list",
             
         function()
-            print(table.ToString(swep_053_owners, "Joueurs affectés par le SWEP de SCP-053", true))
+            for steamID64 in pairs(swep_053_owners) do
+                local ply = player.GetBySteamID64(steamID64)
+                print(steamID64, ply:Nick(), ply:GetName())
+            end
         end,
 
         function(cmd, stringargs)
