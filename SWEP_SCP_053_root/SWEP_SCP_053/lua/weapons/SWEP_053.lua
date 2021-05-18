@@ -141,17 +141,17 @@ if SERVER then
     ---[[ Commande console pour vérifier la liste des joueurs protégés (Server-side)
         concommand.Add("scp_053_list",
             
-        function(ply)
-            if ply:IsValid() and ply:IsAdmin()
+        function(plyCmd)
+            if plyCmd:IsValid() and plyCmd:IsAdmin()
                 then
                     for steamID64, state in pairs(swep_053_owners) do
-                        local ply = player.GetBySteamID64(steamID64)
-                        ply:PrintMessage(1, steamID64 .. " " .. ply:Nick() .. " " .. ply:GetName() .. " " .. tostring(state))
+                        local plyEffect = player.GetBySteamID64(steamID64)
+                        plyCmd:PrintMessage(1, steamID64 .. " " .. plyEffect:Nick() .. " " .. plyEffect:GetName() .. " " .. tostring(state))
                     end
                 else
                     for steamID64, state in pairs(swep_053_owners) do
-                        local ply = player.GetBySteamID64(steamID64)
-                        print(steamID64, ply:Nick(), ply:GetName(), state)
+                        local plyEffect = player.GetBySteamID64(steamID64)
+                        print(steamID64, plyEffect:Nick(), plyEffect:GetName(), state)
                     end
             end
             
